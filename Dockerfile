@@ -22,7 +22,6 @@ ENV LC_ALL en_US.UTF-8
 ENV LC_CTYPE en_US.UTF-8
 ENV LC_MESSAGES en_US.UTF-8
 ENV LC_ALL  en_US.UTF-8
-
 RUN set -ex \
     && buildDeps=' \
         python-pip \
@@ -55,7 +54,8 @@ RUN set -ex \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
     && pip install psycopg2 \
-    && pip install airflow[celery,postgres,hive,ldap,hdfs,devel_hadoop]==$AIRFLOW_VERSION \
+    && pip install mesos.interface \
+    && pip install airflow[celery,postgres,hive,ldap,hdfs,devel_hadoop,mesos]==$AIRFLOW_VERSION \
     && apt-get remove --purge -yqq $buildDeps libpq-dev \
     && apt-get clean \
     && rm -rf \
