@@ -4,7 +4,8 @@
 # BUILD: docker build --rm -t puckel/docker-airflow
 # SOURCE: https://github.com/puckel/docker-airflow
 
-FROM debian:jessie
+#FROM debian:jessie
+FROM mesosphere/mesos:1.0.0
 MAINTAINER Puckel_
 
 # Never prompts the user for choices on installation/configuration of packages
@@ -14,7 +15,8 @@ ENV TERM linux
 # Airflow
 ARG AIRFLOW_VERSION=1.7.1.3
 ENV AIRFLOW_HOME /usr/local/airflow
-
+RUN locale-gen en_US.UTF-8
+RUN touch /etc/locale.gen
 # Define en_US.
 ENV LANGUAGE en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -34,7 +36,6 @@ RUN set -ex \
         libblas-dev \
         liblapack-dev \
     ' \
-    && echo "deb http://http.debian.net/debian jessie-backports main" >/etc/apt/sources.list.d/backports.list \
     && apt-get update -yqq \
     && apt-get install -yqq --no-install-recommends \
         $buildDeps \
@@ -42,7 +43,7 @@ RUN set -ex \
         curl \
         netcat \
         locales \
-    && apt-get install -yqq -t jessie-backports python-requests libpq-dev libmysqlclient-dev libxml2-dev libxslt1-dev\
+    && apt-get install -yqq python-requests libpq-dev libmysqlclient-dev libxml2-dev libxslt1-dev\
     && sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
     && locale-gen \
     && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
@@ -54,7 +55,6 @@ RUN set -ex \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
     && pip install psycopg2 \
-    && pip install mesos.interface \
     && pip install airflow[celery,postgres,hive,ldap,hdfs,devel_hadoop,mesos]==$AIRFLOW_VERSION \
     && apt-get remove --purge -yqq $buildDeps libpq-dev \
     && apt-get clean \
